@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
+
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -35,37 +36,29 @@ public class Robot extends TimedRobot {
   private MecanumDrive mecDrive;
   private OI oi;
 
-  private int LeftXAxis=0;
-  private int LeftYAxis=1;
-  private int RightXAxis=4;
-
+  private int LeftXAxis = 0;
+  private int LeftYAxis = 1;
+  private int RightXAxis = 4;
 
   private Spark leftGrabber;
   private Spark rightGrabber;
   private PWMVictorSPX liftController;
 
-  //may need to change later
-  private int leftGrabberport=7;
-  private int rightGrabberport=8;
-  private int liftControllerPort=9;
+  private int leftGrabberport = 7;
+  private int rightGrabberport = 8;
+  private int liftControllerPort = 9;
 
-  private double leftForward=1.0;
-  private double rightForward=1.0;
-  private double leftback=-1.0;
-  private double rightback=-1.0;
+  private double leftForward = 1.0;
+  private double rightForward = 1.0;
+  private double leftback = -1.0;
+  private double rightback = -1.0;
 
-  private double liftUpSpeed=1.0;
-  private double liftDownSpeed=-1.0;
-
-
-
-
-  //private int Intake=1000;
-  //private int Outake=2000;
+  private double liftUpSpeed = 1.0;
+  private double liftDownSpeed = -1.0;
 
   /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
   @Override
   public void robotInit() {
@@ -73,26 +66,27 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    frontLeft= new Spark(0);
-    frontRight=new Spark(2);
-    backLeft=new Spark(1);
-    backRight=new Spark(3);
-    mecDrive=new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
-    oi=new OI();
+    frontLeft = new Spark(0);
+    frontRight = new Spark(2);
+    backLeft = new Spark(1);
+    backRight = new Spark(3);
+    mecDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
+    oi = new OI();
 
-    leftGrabber=new Spark(leftGrabberport);
-    rightGrabber=new Spark(rightGrabberport);
+    leftGrabber = new Spark(leftGrabberport);
+    rightGrabber = new Spark(rightGrabberport);
 
-    liftController=new PWMVictorSPX(liftControllerPort);
+    liftController = new PWMVictorSPX(liftControllerPort);
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like diagnostics that you want ran during disabled, autonomous,
+   * teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
@@ -100,14 +94,15 @@ public class Robot extends TimedRobot {
 
   /**
    * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString line to get the auto name from the text box below the Gyro
+   * between different autonomous modes using the dashboard. The sendable chooser
+   * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
+   * remove all of the chooser code and uncomment the getString line to get the
+   * auto name from the text box below the Gyro
    *
-   * <p>You can add additional auto modes by adding additional comparisons to
-   * the switch structure below with additional strings. If using the
-   * SendableChooser make sure to add them to the chooser code above as well.
+   * <p>
+   * You can add additional auto modes by adding additional comparisons to the
+   * switch structure below with additional strings. If using the SendableChooser
+   * make sure to add them to the chooser code above as well.
    */
   @Override
   public void autonomousInit() {
@@ -122,13 +117,13 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+    case kCustomAuto:
+      // Put custom auto code here
+      break;
+    case kDefaultAuto:
+    default:
+      // Put default auto code here
+      break;
     }
   }
 
@@ -137,43 +132,43 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    mecDrive.driveCartesian(oi.driver.getRawAxis(LeftXAxis), oi.driver.getRawAxis(LeftYAxis), oi.driver.getRawAxis(RightXAxis));
-    
+    mecDrive.driveCartesian(oi.driver.getRawAxis(LeftXAxis), oi.driver.getRawAxis(LeftYAxis),
+        oi.driver.getRawAxis(RightXAxis));
+
     handleGrab();
 
     handleLift();
-    
 
   }
 
   private void handleLift() {
-    boolean liftUp=oi.driver.getXButton();
-    boolean liftDown=oi.driver.getYButton();
+    boolean liftUp = oi.driver.getXButton();
+    boolean liftDown = oi.driver.getYButton();
 
-    if (liftUp){
+    if (liftUp) {
       liftController.setSpeed(liftUpSpeed);
     }
 
-    if (liftDown){
+    if (liftDown) {
       liftController.setSpeed(liftDownSpeed);
     }
   }
 
   private void handleGrab() {
-    boolean grab=oi.driver.getTriggerAxis(Hand.kLeft)>.5;
-    boolean push=oi.driver.getTriggerAxis(Hand.kRight)>.5;
+    boolean grab = oi.driver.getTriggerAxis(Hand.kLeft) > .5;
+    boolean push = oi.driver.getTriggerAxis(Hand.kRight) > .5;
 
-    if (grab && push){
-      //don't do anything
-  
-      }
-      if (grab){
-        grabTheBall();
-      }
+    if (grab && push) {
+      return;
+    }
+    
+    if (grab) {
+      grabTheBall();
+    }
 
-      if (push){
-        pushTheBall();
-      }
+    if (push) {
+      pushTheBall();
+    }
   }
 
   private void pushTheBall() {
@@ -187,9 +182,8 @@ public class Robot extends TimedRobot {
   }
 
   /*
-  'spark controlers for graber, vex controler for lift'
+   * 'spark controlers for graber, vex controler for lift'
    */
-
 
   /**
    * This function is called periodically during test mode.
@@ -197,9 +191,9 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
-  
+
   @Override
-  public void disabledInit(){
+  public void disabledInit() {
     mecDrive.driveCartesian(0, 0, 0);
   }
 }
