@@ -9,11 +9,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+//import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+//import edu.wpi.first.wpilibj.PWMVictorSPX;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,22 +40,20 @@ public class Robot extends TimedRobot {
   private int LeftYAxis = 1;
   private int RightXAxis = 4;
 
-  private Spark leftGrabber;
-  private Spark rightGrabber;
-  private PWMVictorSPX liftController;
-
-  private int leftGrabberport = 7;
-  private int rightGrabberport = 8;
-  private int liftControllerPort = 9;
-
-  private double leftForward = 1.0;
-  private double rightForward = 1.0;
-  private double leftback = -1.0;
-  private double rightback = -1.0;
-
-  private double liftUpSpeed = 1.0;
-  private double liftDownSpeed = -1.0;
-
+  /*
+   * private Spark leftGrabber; private Spark rightGrabber; private PWMVictorSPX
+   * liftController;
+   * 
+   * //may need to change later private int leftGrabberport=7; private int
+   * rightGrabberport=8; private int liftControllerPort=9;
+   * 
+   * private double leftForward=1.0; private double rightForward=1.0; private
+   * double leftback=-1.0; private double rightback=-1.0;
+   * 
+   * private double liftUpSpeed=1.0; private double liftDownSpeed=-1.0;
+   */
+  // private int Intake=1000;
+  // private int Outake=2000;
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -73,10 +71,12 @@ public class Robot extends TimedRobot {
     mecDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
     oi = new OI();
 
-    leftGrabber = new Spark(leftGrabberport);
-    rightGrabber = new Spark(rightGrabberport);
-
-    liftController = new PWMVictorSPX(liftControllerPort);
+    /*
+     * leftGrabber=new Spark(leftGrabberport); rightGrabber=new
+     * Spark(rightGrabberport);
+     * 
+     * liftController=new PWMVictorSPX(liftControllerPort);
+     */
   }
 
   /**
@@ -118,11 +118,12 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
     case kCustomAuto:
-      // Put custom auto code here
       break;
     case kDefaultAuto:
     default:
       // Put default auto code here
+      mecDrive.driveCartesian(-oi.driver.getRawAxis(LeftYAxis), oi.driver.getRawAxis(LeftXAxis),
+          oi.driver.getRawAxis(RightXAxis));
       break;
     }
   }
@@ -132,59 +133,60 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    mecDrive.driveCartesian(oi.driver.getRawAxis(LeftXAxis), oi.driver.getRawAxis(LeftYAxis),
-        oi.driver.getRawAxis(RightXAxis));
+    // handleGrab();
+    // handleLift();
 
-    handleGrab();
+    boolean DeadzoneY = -oi.driver.getRawAxis(LeftYAxis) > 0.2;
+    boolean DeadzoneX = oi.driver.getRawAxis(LeftXAxis) > 0.2;
+    boolean DeadzoneXR = oi.driver.getRawAxis(RightXAxis) > 0.2;
 
-    handleLift();
-
-  }
-
-  private void handleLift() {
-    boolean liftUp = oi.driver.getXButton();
-    boolean liftDown = oi.driver.getYButton();
-
-    if (liftUp) {
-      liftController.setSpeed(liftUpSpeed);
+    if (DeadzoneY) {
+      mecnDriver();
     }
 
-    if (liftDown) {
-      liftController.setSpeed(liftDownSpeed);
-    }
-  }
-
-  private void handleGrab() {
-    boolean grab = oi.driver.getTriggerAxis(Hand.kLeft) > .5;
-    boolean push = oi.driver.getTriggerAxis(Hand.kRight) > .5;
-
-    if (grab && push) {
-      return;
-    }
+    if (DeadzoneX) {
+      mecnDriver();
     
-    if (grab) {
-      grabTheBall();
     }
 
-    if (push) {
-      pushTheBall();
+    if (DeadzoneXR) {
+      mecnDriver();
     }
   }
 
-  private void pushTheBall() {
-    leftGrabber.setSpeed(leftForward);
-    rightGrabber.setSpeed(rightForward);
+  public void mecnDriver() {
+    mecDrive.driveCartesian(-oi.driver.getRawAxis(LeftYAxis), oi.driver.getRawAxis(LeftXAxis),
+        oi.driver.getRawAxis(RightXAxis));
   }
 
-  private void grabTheBall() {
-    leftGrabber.setSpeed(leftback);
-    rightGrabber.setSpeed(rightback);
-  }
+  /*
+   * private void handleLift() { boolean liftUp=oi.driver.getXButton(); boolean
+   * liftDown=oi.driver.getYButton();
+   * 
+   * if (liftUp){ liftController.setSpeed(liftUpSpeed); }
+   * 
+   * if (liftDown){ liftController.setSpeed(liftDownSpeed); } }
+   * 
+   * private void handleGrab() { boolean
+   * grab=oi.driver.getTriggerAxis(Hand.kLeft)>.5; boolean
+   * push=oi.driver.getTriggerAxis(Hand.kRight)>.5;
+   * 
+   * if (grab && push){ //don't do anything
+   * 
+   * } if (grab){ grabTheBall(); }
+   * 
+   * if (push){ pushTheBall(); } }
+   * 
+   * private void pushTheBall() { leftGrabber.setSpeed(leftForward);
+   * rightGrabber.setSpeed(rightForward); }
+   * 
+   * private void grabTheBall() { leftGrabber.setSpeed(leftback);
+   * rightGrabber.setSpeed(rightback); }
+   */
 
   /*
    * 'spark controlers for graber, vex controler for lift'
    */
-
   /**
    * This function is called periodically during test mode.
    */
